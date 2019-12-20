@@ -11,13 +11,13 @@ variables:
   azureSubscription: 'c12ed0d8-e059-4646-b577-d8e1662ea545'
 
   # Function app name
-  functionAppName: 'alert2eventhub'
+  functionAppName: 'ep951vfuncappdemo'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
 
   # Working Directory
-  workingDirectory: '$(System.DefaultWorkingDirectory)/python/azuremon-alert-to-eventhub'
+  workingDirectory: '$(System.DefaultWorkingDirectory)/python/ep951vfuncappdemo'
 
 stages:
 - stage: Build
