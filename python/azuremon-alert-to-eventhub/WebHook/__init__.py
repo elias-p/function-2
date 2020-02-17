@@ -171,6 +171,14 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         resource_id = webhook['data']['context']['scope']
     elif check_keys('data', 'context', 'activityLog', 'authorization', 'scope'):
         resource_id = webhook['data']['context']['activityLog']['authorization']['scope']
+    elif check_keys(webhook, 'data', 'alertContext', 'resourceId'):
+        resource_id = webhook['data']['alertContext']['resourceId']
+    elif check_keys('data', 'alertContext', 'authorization','action','scope'):
+        resource_id = webhook['data']['alerContext']['action']['action']['scope']	
+   elif check_keys('data', 'alertContext', 'WorkspaceId'):
+        resource_id = webhook['data']['alerContext']['WorkspaceId']
+   elif check_keys('data', 'alertContext', 'conditionType', 'metricName', 'ResourceId'):
+        resource_id = webhook['data']['alertContext']['conditionType']['authorization']['ResourceId']    
 
     if resource_id:
         resource_client = ResourceManagementClient(credentials, subscription_id)
@@ -208,3 +216,4 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             'status': 'SUCCESS'
         })
     )
+
