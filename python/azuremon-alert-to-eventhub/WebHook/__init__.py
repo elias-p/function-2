@@ -158,44 +158,16 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     logger.debug('Python HTTP trigger function processed a request.')
     logger.debug(f"method={req.method}, url={req.url}, params={req.params}")
     logger.debug(f"body={req.get_json()}")
-
-    # Handle WebHook.
+	
+	# Handle WebHook
     webhook = req.get_json()
-    # Get resource information specifically tags if this is an alert
-    resource_id = ""
-    if check_keys(webhook, 'data', 'context', 'resourceId'):
-        resource_id = webhook['data']['context']['resourceId']
-    elif check_keys('data', 'context', 'activityLog', 'resourceId'):
-        resource_id = webhook['data']['context']['activityLog']['resourceId']
-    elif check_keys('data', 'context', 'scope'):
-        resource_id = webhook['data']['context']['scope']
-    elif check_keys('data', 'context', 'activityLog', 'authorization', 'scope'):
-        resource_id = webhook['data']['context']['activityLog']['authorization']['scope']
-    elif check_keys(webhook, 'data', 'alertContext', 'resourceId'):
-        resource_id = webhook['data']['alertContext']['resourceId']
-    elif check_keys('data', 'alertContext', 'authorization','action','scope'):
-        resource_id = webhook['data']['alerContext']['action']['action']['scope']	
-   elif check_keys('data', 'alertContext', 'WorkspaceId'):
-        resource_id = webhook['data']['alerContext']['WorkspaceId']
-   elif check_keys('data', 'alertContext', 'conditionType', 'metricName', 'ResourceId'):
-        resource_id = webhook['data']['alertContext']['conditionType']['authorization']['ResourceId']    
-
-    if resource_id:
-        resource_client = ResourceManagementClient(credentials, subscription_id)
-        try:
-            resource = resource_client.resources.get_by_id(resource_id, api_version='2018-06-01')
-            if resource.tags:
-                webhook['tags'] = resource.tags
-                logger.info(f"adding tags {resource.tags}")
-                
-            else:
-                logger.info(f"no tags found in resource {resource_id}")
-        except:
-            logger.error(f"received exception from ResourceManagementClient for {resource_id}")
-    else:
-        logger.info("no resource_id found in webhook")
-
-    # Key Vault stuff
+    
+    #Create an empty dict within webhook for motsID
+    webhook['additionalData'] = {}
+    addl_data = webhook['additionalData']
+    addl_data['motsID'] = "0000"
+    
+    # Key Vault stuff.
     kv_mgmt_client = KeyVaultManagementClient(credentials, subscription_id)
     kv_client = KeyVaultClient(credentials)
     namespace = get_kv_secret(kv_client, 'EventHubNamespace')
@@ -213,7 +185,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     date = datetime.datetime.now()
     return func.HttpResponse(
         json.dumps({
+            'date': date,
             'status': 'SUCCESS'
         })
     )
-
